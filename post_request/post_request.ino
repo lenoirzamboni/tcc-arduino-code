@@ -22,7 +22,7 @@ void setup() {
   Serial.println(WiFi.localIP());
   syncSemaphore = xSemaphoreCreateBinary();
   pinMode(sensorPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(sensorPin), handleInterrupt, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(sensorPin), handleInterrupt, RISING);
 }
 
 void loop() {
