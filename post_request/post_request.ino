@@ -15,7 +15,6 @@ void setup() {
   }
   Serial.print("Connected to the WiFi network with IP: ");
   Serial.println(WiFi.localIP());
-  pinMode(sensorPin, INPUT_PULLUP);
 }
 
 void loop() {
