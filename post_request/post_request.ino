@@ -3,7 +3,7 @@
 
 const char* ssid = "network_name";
 const char* password =  "network_passwd";
-const byte sensorPin = 22;
+const byte sensorPin = A0;
 byte switcher = 0;
 
 void setup() {
