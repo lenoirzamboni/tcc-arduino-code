@@ -19,6 +19,7 @@ void setup() {
 }
 
 void loop() {
+  if (analogRead(sensorPin) > 0) { // Input voltage range of bare ESP8266 is 0 — 1.0V
     Serial.println("Motion detected - sending POST request");
     if (switcher) {
       sendVagaLivre();
@@ -27,6 +28,7 @@ void loop() {
       sendVagaOcupada();
       switcher = 0;
     }
+    delay(5000);
   }
 }
 
