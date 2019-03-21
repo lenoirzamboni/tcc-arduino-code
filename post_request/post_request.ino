@@ -5,11 +5,6 @@ const char* ssid = "network_name";
 const char* password =  "network_passwd";
 const byte sensorPin = 22;
 byte switcher = 0;
-SemaphoreHandle_t syncSemaphore;
-
-void IRAM_ATTR handleInterrupt() {
-  xSemaphoreGiveFromISR(syncSemaphore, NULL);
-}
 
 void setup() {
   Serial.begin(115200);
@@ -20,14 +15,10 @@ void setup() {
   }
   Serial.print("Connected to the WiFi network with IP: ");
   Serial.println(WiFi.localIP());
-  syncSemaphore = xSemaphoreCreateBinary();
   pinMode(sensorPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(sensorPin), handleInterrupt, CHANGE);
 }
 
 void loop() {
-  xSemaphoreTake(syncSemaphore, portMAX_DELAY);
-  if (digitalRead(sensorPin)) {
     Serial.println("Motion detected - sending POST request");
     if (switcher) {
       sendVagaLivre();
