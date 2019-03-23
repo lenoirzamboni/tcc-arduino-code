@@ -1,10 +1,13 @@
-#include <WiFi.h>
-#include <HTTPClient.h>
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
 
 const char* ssid = "network_name";
 const char* password =  "network_passwd";
 const byte sensorPin = A0;
-byte switcher = 0;
+bool switcher = true;
+const int bufferSize = 10;
+int readingBuffer[bufferSize];
+int bufferPointer = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -17,24 +20,59 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
+void initializeReadingBuffer() {
+  Serial.println("Initialize reading buffer");
+  for (int i; i < sizeof(readingBuffer); i++) {
+    readingBuffer[i] = -1;
+  }
+}
+
+bool detectedMotion() {
+  int counter = 0;
+  for (int i; i < bufferSize; i++) {
+    if (readingBuffer[i] > 100) {
+      counter++;
+    }
+  }
+  return counter == bufferSize;
+}
+
 void loop() {
-  if (analogRead(sensorPin) > 0) { // Input voltage range of bare ESP8266 is 0 — 1.0V
+  int val = analogRead(sensorPin);
+  Serial.print("Motion value: ");
+  Serial.println(val);
+
+  readingBuffer[bufferPointer] = val;
+
+  if (detectedMotion()) { // Input voltage range of bare ESP8266 is 0 — 1.0V
+    Serial.println();
     Serial.println("Motion detected - sending POST request");
+    Serial.println();
     if (switcher) {
       sendVagaLivre();
-      switcher = 1;
+      switcher = false;
     } else {
       sendVagaOcupada();
-      switcher = 0;
+      switcher = true;
     }
-    delay(5000);
+  } else {
+    Serial.println("No motion detected");
   }
+  
+  bufferPointer++;
+  if (bufferPointer == bufferSize) {
+    initializeReadingBuffer();
+    bufferPointer = 0;
+  }
+  
+  delay(100);
 }
 
 void sendVagaLivre() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    http.begin("http://192.168.1.88:8090/vagaLivre");
+    http.setTimeout(5000);
+    http.begin("http://192.168.1.7:5544/vagaLivre");
     http.addHeader("Content-Type", "text/plain");
     int respondeCode = http.POST("passwd");
     if (respondeCode > 0) {
@@ -53,7 +91,8 @@ void sendVagaLivre() {
 void sendVagaOcupada() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
-    http.begin("http://192.168.1.88:8090/vagaOcupada");
+    http.setTimeout(5000);
+    http.begin("http://192.168.1.7:5544/vagaOcupada");
     http.addHeader("Content-Type", "text/plain");
     int respondeCode = http.POST("passwd");
     if (respondeCode > 0) {
