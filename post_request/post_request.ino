@@ -72,9 +72,9 @@ void sendVagaLivre() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     http.setTimeout(5000);
-    http.begin("http://192.168.1.7:5544/vagaLivre");
-    http.addHeader("Content-Type", "text/plain");
-    int respondeCode = http.POST("passwd");
+    http.begin("http://192.168.1.3:5544/vagaLivre");
+    http.addHeader("Content-Type", "application/json");
+    int respondeCode = http.POST("{\"password\":\"1234\"}");
     if (respondeCode > 0) {
       Serial.print("Got response code - vagaLivre: ");
       Serial.println(respondeCode);
@@ -92,9 +92,9 @@ void sendVagaOcupada() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     http.setTimeout(5000);
-    http.begin("http://192.168.1.7:5544/vagaOcupada");
-    http.addHeader("Content-Type", "text/plain");
-    int respondeCode = http.POST("passwd");
+    http.begin("http://192.168.1.3:5544/vagaOcupada");
+    http.addHeader("Content-Type", "application/json");
+    int respondeCode = http.POST("{\"password\":\"1234\"}");
     if (respondeCode > 0) {
       Serial.print("Got response code - vagaOcupada: ");
       Serial.println(respondeCode);
