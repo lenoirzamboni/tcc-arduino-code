@@ -8,6 +8,7 @@ bool switcher = true;
 const int bufferSize = 10;
 int readingBuffer[bufferSize];
 int bufferPointer = 0;
+const String host = "http://192.168.1.3:5544";
 
 void setup() {
   Serial.begin(115200);
@@ -72,9 +73,9 @@ void sendVagaLivre() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     http.setTimeout(5000);
-    http.begin("http://192.168.1.3:5544/vagaLivre");
+    http.begin(host + "/vagaLivre");
     http.addHeader("Content-Type", "application/json");
-    int respondeCode = http.POST("{\"password\":\"1234\"}");
+    int respondeCode = http.GET();
     if (respondeCode > 0) {
       Serial.print("Got response code - vagaLivre: ");
       Serial.println(respondeCode);
@@ -92,9 +93,9 @@ void sendVagaOcupada() {
   if (WiFi.status() == WL_CONNECTED) {
     HTTPClient http;
     http.setTimeout(5000);
-    http.begin("http://192.168.1.3:5544/vagaOcupada");
+    http.begin(host + "/vagaOcupada");
     http.addHeader("Content-Type", "application/json");
-    int respondeCode = http.POST("{\"password\":\"1234\"}");
+    int respondeCode = http.POST("{\"token\":\"1234\"}");
     if (respondeCode > 0) {
       Serial.print("Got response code - vagaOcupada: ");
       Serial.println(respondeCode);
